@@ -10,18 +10,20 @@ export const CreatorProfile: React.FC<CreatorProfileProps> = ({ currentLang }) =
   const t = i18n[currentLang];
 
   const projects = [
-    { name: 'سالنیار (Salonyar)', desc: 'سامانه مدیریت و اتوماسیون سالن‌ها' },
-    { name: 'سالنیار بیوتی / زیبایار', desc: 'پلتفرم تخصصی صنعت زیبایی و آرایشگاهی' },
-    { name: 'ساختمانیار', desc: 'مدیریت هوشمند پروژه و بازار ساختمان' },
-    { name: 'خدماتیار', desc: 'سامانه جامع درخواست و مدیریت خدمات' },
-    { name: 'نکزوز (Nexus Open Mind)', desc: 'پلتفرم هوش مصنوعی پیشرفته و هوش عمومی' },
-    { name: 'بازار فرش دستباف AI', desc: 'دستیار، رجشمار و کارشناسی هوشمند فرش' },
-    { name: 'تانافورک (TavanaFork)', desc: 'ابزار توسعه و فورک نرم‌افزاری' },
-    { name: 'تانابیوتی (TavanaBeauty)', desc: 'شبکه اکوسیستم زیبایی توانا' },
-    { name: 'تاناجوکیشن (TavanaEducation)', desc: 'سامانه آموزش و آکادمی تخصصی' },
-    { name: 'تانافریلنسر (TavanaFreelancer)', desc: 'پلتفرم دورکاری و پروژه‌های آزاد' },
-    { name: 'ایجنت توانا (Agent Tavana)', desc: 'کارگزاران خودکار هوش مصنوعی' },
-    { name: 'تانامسترها (TavanaMasters)', desc: 'شبکه اساتید و خبرگان صنعت' },
+    { name: 'سالنیار (Salonyar)', desc: 'سامانه مدیریت و اتوماسیون سالن‌ها و زیبایی' },
+    { name: 'ساختمانیار (Sakhtmanyar)', desc: 'مدیریت هوشمند پروژه و بازار مصالح ساختمان' },
+    { name: 'کلینیک‌یار (Clinicyar)', desc: 'مدیریت هوشمند کلینیک و نوبت‌دهی پزشکی' },
+    { name: 'دکورمیت (Decormit)', desc: 'پلتفرم دکوراسیون داخلی و معماری مدرن' },
+    { name: 'دنتال‌بار (Dentalbar)', desc: 'سامانه تخصصی تجهیزات و کلینیک‌های دندانپزشکی' },
+    { name: 'نکسوس هوش مصنوعی (Nexus AI)', desc: 'پلتفرم پیشرفته هوش مصنوعی و پردازش هوشمند' },
+    { name: 'لینگووی توانا (Linguoy)', desc: 'آموزش تخصصی زبان فارسی به انگلیسی‌زبانان و بالعکس' },
+    { name: 'توانا فریلنسر (Tavana Freelancer)', desc: 'پلتفرم دورکاری و پروژه‌های فنی و تخصصی' },
+    { name: 'توانا اجوکیشن (Tavana Education)', desc: 'سامانه آموزش آنلاین و آکادمی تخصصی' },
+    { name: 'توانا فورگ (Tavana Fork)', desc: 'ابزار توسعه، مدیریت مخازن و فورک نرم‌افزاری' },
+    { name: 'تی دپلوی (T-Deploy)', desc: 'پلتفرم استقرار خودکار و ابری اپلیکیشن‌ها' },
+    { name: 'خدماتیار (Khedmatyar)', desc: 'سامانه جامع درخواست و مدیریت خدمات شهری' },
+    { name: 'وانپرویدی (1P / Wanproy)', desc: 'موتور شتاب‌دهنده ساخت و توسعه نرم‌افزار' },
+    { name: 'بازار بزرگ فرش ایران و جهان', desc: 'پلتفرم جامع اصالت‌سنجی و تجارت بین‌المللی فرش' },
   ];
 
   return (
@@ -58,7 +60,7 @@ export const CreatorProfile: React.FC<CreatorProfileProps> = ({ currentLang }) =
         <div className="space-y-2 pt-2 border-t border-slate-800">
           <h3 className="font-bold text-amber-300 text-xs flex items-center gap-1.5">
             <i className="fa-solid fa-cubes text-amber-400"></i>
-            <span>پروژه‌ها و سامانه‌های شاخص اکوسیستم آفرینش:</span>
+            <span>پروژه‌ها و اکوسیستم نرم‌افزارهای تخصصی توسعه‌دنده:</span>
           </h3>
           <p className="text-slate-400 text-[11px]">
             {t.projectsList}

@@ -6,18 +6,29 @@ interface BlessingCounterProps {
   currentLang: AppLang;
 }
 
+type NiyatKey = 'customer' | 'sales' | 'family';
+
 export const BlessingCounter: React.FC<BlessingCounterProps> = ({ currentLang }) => {
   const t = i18n[currentLang];
-  const [count, setCount] = useState<number>(() => {
-    const saved = localStorage.getItem('alimiri_salawat_count');
-    return saved ? parseInt(saved, 10) : 0;
-  });
+
+  const [currentNiyat, setCurrentNiyat] = useState<NiyatKey>('customer');
+  const [count, setCount] = useState<number>(0);
   const [target, setTarget] = useState<number>(100);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
+  // Load count whenever currentNiyat changes
   useEffect(() => {
-    localStorage.setItem('alimiri_salawat_count', count.toString());
-  }, [count]);
+    const key = `blessing_${currentNiyat}`;
+    const saved = localStorage.getItem(key);
+    setCount(saved ? parseInt(saved, 10) : 0);
+  }, [currentNiyat]);
+
+  // Save count on change
+  const updateCountAndStorage = (newVal: number) => {
+    setCount(newVal);
+    const key = `blessing_${currentNiyat}`;
+    localStorage.setItem(key, newVal.toString());
+  };
 
   const playClickSound = () => {
     if (!soundEnabled) return;
@@ -35,12 +46,12 @@ export const BlessingCounter: React.FC<BlessingCounterProps> = ({ currentLang })
       osc.start();
       osc.stop(audioCtx.currentTime + 0.08);
     } catch (e) {
-      // Ignore web audio errors
+      // Audio fallback
     }
   };
 
   const increment = () => {
-    setCount((prev) => prev + 1);
+    updateCountAndStorage(count + 1);
     playClickSound();
     if (navigator.vibrate) {
       navigator.vibrate(30);
@@ -48,12 +59,12 @@ export const BlessingCounter: React.FC<BlessingCounterProps> = ({ currentLang })
   };
 
   const decrement = () => {
-    setCount((prev) => Math.max(0, prev - 1));
+    updateCountAndStorage(Math.max(0, count - 1));
   };
 
   const reset = () => {
-    if (window.confirm(currentLang === 'fa' ? 'آیا از صفر کردن شمارشگر مطمئن هستید؟' : 'Reset counter?')) {
-      setCount(0);
+    if (window.confirm(t.confirmReset || 'آیا از صفر کردن شمارشگر مطمئن هستید؟')) {
+      updateCountAndStorage(0);
     }
   };
 
@@ -61,7 +72,7 @@ export const BlessingCounter: React.FC<BlessingCounterProps> = ({ currentLang })
 
   return (
     <section className="glass-card rounded-2xl p-6 space-y-5 text-center shadow-2xl relative overflow-hidden">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-2">
         <h2 className="text-sm md:text-base font-bold text-amber-400 flex items-center justify-center gap-2">
           <i className="fa-solid fa-heart-pulse text-amber-400 text-lg animate-pulse"></i>
           <span>{t.counterTitle}</span>
@@ -79,7 +90,22 @@ export const BlessingCounter: React.FC<BlessingCounterProps> = ({ currentLang })
         </button>
       </div>
 
-      <div className="py-4 space-y-2">
+      {/* Niyat / Intention Dropdown Selector */}
+      <div className="max-w-xs mx-auto space-y-1 text-xs">
+        <label className="block text-slate-300 font-bold text-end me-1">{t.niyatLabel}</label>
+        <select
+          value={currentNiyat}
+          onChange={(e) => setCurrentNiyat(e.target.value as NiyatKey)}
+          className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-amber-300 font-bold focus:border-amber-500 focus:outline-none shadow-inner"
+        >
+          <option value="customer">🤲 {t.nCustomer}</option>
+          <option value="sales">💰 {t.nSales}</option>
+          <option value="family">🌸 {t.nFamily}</option>
+        </select>
+      </div>
+
+      {/* Counter Display */}
+      <div className="py-2 space-y-2">
         <div className="text-6xl md:text-7xl font-black gold-text tracking-widest font-mono">
           {count.toLocaleString()}
         </div>

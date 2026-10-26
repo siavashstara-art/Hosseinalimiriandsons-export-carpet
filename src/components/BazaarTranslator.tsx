@@ -16,32 +16,51 @@ export const BazaarTranslator: React.FC<BazaarTranslatorProps> = ({ currentLang 
   const [transResult, setTransResult] = useState<any | null>(null);
 
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
-  const [audioError, setAudioError] = useState<string | null>(null);
 
   const handleQuickTermClick = (item: GlossaryTerm) => {
     setSourceText(item.faTerm);
-    // Populate directly from local dataset for instant response
     setTransResult({
       originalTerm: item.faTerm,
-      translatedTerm: targetLang === 'en' ? item.enTerm : targetLang === 'ar' ? item.arTerm : item.faTerm,
-      phoneticPronunciation: item.phoneticFa,
-      bazaarContext: targetLang === 'en' ? item.enDesc : targetLang === 'ar' ? item.arDesc : item.faDesc,
+      translatedTerm:
+        targetLang === 'en'
+          ? item.enTerm
+          : targetLang === 'ar'
+          ? item.arTerm
+          : item.faTerm,
+      phoneticPronunciation: item.phoneticEn || item.phoneticFa,
+      bazaarContext:
+        targetLang === 'en'
+          ? item.enDesc
+          : targetLang === 'ar'
+          ? item.arDesc
+          : item.faDesc,
     });
   };
 
   const handleTranslate = async () => {
-    if (!sourceText.trim()) return;
+    const raw = sourceText.trim();
+    if (!raw) return;
 
+    // Check local dictionary first
+    const matched = BAZAAR_GLOSSARY.find(
+      (g) => g.faTerm.includes(raw) || raw.includes(g.faTerm)
+    );
+
+    if (matched) {
+      handleQuickTermClick(matched);
+      return;
+    }
+
+    // Call server AI endpoint if not found in local quick dictionary
     setIsTranslating(true);
     setTransResult(null);
-    setAudioError(null);
 
     try {
       const response = await fetch('/api/gemini/translate-term', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          term: sourceText,
+          term: raw,
           targetLang,
         }),
       });
@@ -62,33 +81,44 @@ export const BazaarTranslator: React.FC<BazaarTranslatorProps> = ({ currentLang 
   const playSpeechAudio = async (textToSpeak: string) => {
     if (!textToSpeak) return;
     setIsPlayingAudio(true);
-    setAudioError(null);
 
+    // Try browser SpeechSynthesis first for immediate zero-latency feedback
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(textToSpeak);
+        const langMap: Record<string, string> = { en: 'en-US', ar: 'ar-SA', fa: 'fa-IR', az: 'az-AZ' };
+        u.lang = langMap[targetLang] || 'en-US';
+        u.onend = () => setIsPlayingAudio(false);
+        u.onerror = () => speakWithServerAi(textToSpeak);
+        window.speechSynthesis.speak(u);
+        return;
+      } catch (e) {
+        // Fallback to Gemini TTS
+      }
+    }
+
+    await speakWithServerAi(textToSpeak);
+  };
+
+  const speakWithServerAi = async (textToSpeak: string) => {
     try {
       const response = await fetch('/api/gemini/speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: textToSpeak,
-          voice: 'Kore',
-        }),
+        body: JSON.stringify({ text: textToSpeak, voice: 'Kore' }),
       });
 
       const data = await response.json();
       if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to generate audio.');
+        throw new Error(data.error || 'Failed to generate speech audio.');
       }
 
       const audio = new Audio(`data:audio/wav;base64,${data.audioBase64}`);
       audio.onended = () => setIsPlayingAudio(false);
-      audio.onerror = () => {
-        setIsPlayingAudio(false);
-        setAudioError('Failed to play audio stream');
-      };
+      audio.onerror = () => setIsPlayingAudio(false);
       await audio.play();
-    } catch (err: any) {
-      console.error(err);
-      setAudioError(err.message || 'Audio playback error');
+    } catch (e) {
       setIsPlayingAudio(false);
     }
   };
@@ -151,7 +181,7 @@ export const BazaarTranslator: React.FC<BazaarTranslatorProps> = ({ currentLang 
         <textarea
           value={sourceText}
           onChange={(e) => setSourceText(e.target.value)}
-          rows={3}
+          rows={2}
           placeholder={t.typeOrSelect}
           className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-sm text-slate-100 focus:border-amber-500 focus:outline-none"
         ></textarea>
@@ -204,7 +234,7 @@ export const BazaarTranslator: React.FC<BazaarTranslatorProps> = ({ currentLang 
             </div>
             {transResult.phoneticPronunciation && (
               <span className="text-xs text-slate-400 italic font-mono">
-                /{transResult.phoneticPronunciation}/
+                / {transResult.phoneticPronunciation} /
               </span>
             )}
           </div>
@@ -222,8 +252,6 @@ export const BazaarTranslator: React.FC<BazaarTranslatorProps> = ({ currentLang 
               <i className={`fa-solid ${isPlayingAudio ? 'fa-spinner fa-spin' : 'fa-volume-high'}`}></i>
               <span>{isPlayingAudio ? t.speechGenerating : t.speechPlay}</span>
             </button>
-
-            {audioError && <span className="text-[11px] text-rose-400">{audioError}</span>}
           </div>
         </div>
       )}

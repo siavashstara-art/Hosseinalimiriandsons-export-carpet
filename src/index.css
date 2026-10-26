@@ -1,17 +1,43 @@
 @import "tailwindcss";
 
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background-color: #040711;
+  color: #f8fafc;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode {
+  background-color: #f8f5f0;
+  color: #1e293b;
+}
+
 @layer utilities {
   .glass-card {
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(245, 158, 11, 0.22);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  body.light-mode .glass-card {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    color: #1e293b;
+    box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.1);
   }
 
   .glass-card-amber {
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+
+  body.light-mode .glass-card-amber {
+    background: linear-gradient(135deg, rgba(254, 243, 199, 0.8) 0%, rgba(255, 255, 255, 0.95) 100%);
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    color: #1e293b;
   }
 
   .gold-grad {
@@ -28,6 +54,12 @@
     -webkit-text-fill-color: transparent;
   }
 
+  body.light-mode .gold-text {
+    background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #b45309 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   .rug-pattern {
     background-color: #030712;
     background-image: 
@@ -36,6 +68,48 @@
     background-size: 24px 24px;
     background-position: 0 0, 12px 12px;
   }
+
+  body.light-mode .rug-pattern {
+    background-color: #f8f5f0;
+    background-image: 
+      radial-gradient(rgba(180, 83, 9, 0.12) 1px, transparent 1px),
+      radial-gradient(rgba(217, 119, 6, 0.08) 1px, transparent 1px);
+  }
+}
+
+/* Light mode overrides for text, inputs, buttons */
+body.light-mode .text-slate-100,
+body.light-mode .text-slate-200,
+body.light-mode .text-slate-300 {
+  color: #1e293b !important;
+}
+
+body.light-mode .text-slate-400 {
+  color: #475569 !important;
+}
+
+body.light-mode .text-amber-300,
+body.light-mode .text-amber-400 {
+  color: #b45309 !important;
+}
+
+body.light-mode input,
+body.light-mode textarea,
+body.light-mode select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.light-mode .bg-slate-900,
+body.light-mode .bg-slate-950 {
+  background-color: #f3ece0 !important;
+  border-color: #e2d1b8 !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .border-slate-800 {
+  border-color: #e2d1b8 !important;
 }
 
 /* Custom scrollbar */
@@ -45,6 +119,9 @@
 }
 ::-webkit-scrollbar-track {
   background: #030712;
+}
+body.light-mode ::-webkit-scrollbar-track {
+  background: #f8f5f0;
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(245, 158, 11, 0.3);
