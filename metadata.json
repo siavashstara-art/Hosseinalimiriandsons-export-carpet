@@ -1,0 +1,6 @@
+{
+  "name": "دستیار تخصصی بازار فرش - فرش حسینعلی میری و پسران",
+  "description": "دستیار هوشمند، کارشناسی رجشمار، مترجم صوتی تخصصی و استوری‌ساز بازار فرش دستباف - یادبود مرحوم حاج حسینعلی میری و اثر آقای اکبر علیمیری",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
