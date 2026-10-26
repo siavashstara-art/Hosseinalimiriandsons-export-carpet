@@ -56,6 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
     { id: 'translator', labelFa: 'مترجم اصطلاحات', labelEn: 'Bazaar Translator', icon: 'fa-microphone' },
     { id: 'story', labelFa: 'استوری و پست‌ساز', labelEn: 'Story Creator', icon: 'fa-photo-film' },
     { id: 'calculator', labelFa: 'محاسبه‌گر قیمت و متراژ', labelEn: 'Price & Knot Calc', icon: 'fa-calculator' },
+    { id: 'videopromo', labelFa: '🎬 تیزر کافه بازار (۳۰ ثانیه)', labelEn: 'Bazaar Promo Video', icon: 'fa-clapperboard' },
     { id: 'report', labelFa: '🚩 گزارش تخلفات', labelEn: 'Report Violation', icon: 'fa-flag' },
     { id: 'adminads', labelFa: '📢 مدیریت تبلیغات (ادمین)', labelEn: 'Admin Ads', icon: 'fa-bullhorn' },
     { id: 'charter', labelFa: 'منشور حقوقی و اخلاقی', labelEn: 'Ethical Charter', icon: 'fa-scale-balanced' },

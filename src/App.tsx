@@ -22,6 +22,7 @@ import { AdSlider } from './components/AdSlider';
 import { EthicalCharter } from './components/EthicalCharter';
 import { CreatorProfile } from './components/CreatorProfile';
 import { MemorialBanner } from './components/MemorialBanner';
+import { BazaarVideoPromo } from './components/BazaarVideoPromo';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<AppLang>('fa');
@@ -119,6 +120,7 @@ export default function App() {
         {activeTab === 'translator' && <BazaarTranslator currentLang={currentLang} />}
         {activeTab === 'story' && <StoryCreator currentLang={currentLang} />}
         {activeTab === 'calculator' && <BazaarCalculator currentLang={currentLang} />}
+        {activeTab === 'videopromo' && <BazaarVideoPromo currentLang={currentLang} />}
         {activeTab === 'report' && <ReportEngine currentLang={currentLang} />}
         {activeTab === 'adminads' && <AdminAdPanel currentLang={currentLang} />}
         {activeTab === 'charter' && <EthicalCharter currentLang={currentLang} />}

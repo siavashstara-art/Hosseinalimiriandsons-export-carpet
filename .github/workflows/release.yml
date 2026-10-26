@@ -1,0 +1,61 @@
+name: Android Release Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Web App Bundle
+        run: npm run build
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build Android Release (APK & AAB)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo "Building production release artifacts for Android..."
+          # If android wrapper exists, build release; otherwise verify web bundle
+          if [ -f "android/gradlew" ]; then
+            cd android
+            chmod +x gradlew
+            ./gradlew assembleRelease bundleRelease
+          else
+            echo "Web build completed successfully. Ready for PWA / TWA packaging."
+          fi
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: alimiri-carpet-bazaar-release
+          path: |
+            dist/
+            android/app/build/outputs/apk/release/
+            android/app/build/outputs/bundle/release/
+          if-no-files-found: ignore
