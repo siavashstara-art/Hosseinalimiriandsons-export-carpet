@@ -44,6 +44,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   const tabs = [
     { id: 'counter', labelFa: 'شمارشگر برکت', labelEn: 'Blessing Counter', icon: 'fa-heart-pulse' },
+    { id: 'authmod', labelFa: '🔑 احراز هویت ملی و اصالت‌سنجی', labelEn: 'National ID & Auth', icon: 'fa-fingerprint' },
+    { id: 'serviceshop', labelFa: '🛍️ فروشگاه خدمات و پنل درآمدزایی', labelEn: 'Services & Monetization', icon: 'fa-store' },
+    { id: 'tour360', labelFa: '🌐 تور مجازی ۳۶۰ درجه', labelEn: '360 Virtual Tour', icon: 'fa-vr-cardboard' },
+    { id: 'timedauction', labelFa: '⏳ اتاق مزایده زمان‌دار', labelEn: 'Timed Auction Room', icon: 'fa-gavel' },
     { id: 'booths', labelFa: 'حجره‌های بازار (کد ملی)', labelEn: 'Merchant Booths', icon: 'fa-store' },
     { id: 'homelistings', labelFa: '🏠 آگهی خانگی (عموم)', labelEn: 'Sell Home Rug', icon: 'fa-house-chimney' },
     { id: 'customorder', labelFa: 'سفارش بافت ویژه (مشاهیر/پرچم)', labelEn: 'Custom Orders', icon: 'fa-paintbrush' },

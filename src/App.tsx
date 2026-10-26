@@ -23,6 +23,10 @@ import { EthicalCharter } from './components/EthicalCharter';
 import { CreatorProfile } from './components/CreatorProfile';
 import { MemorialBanner } from './components/MemorialBanner';
 import { BazaarVideoPromo } from './components/BazaarVideoPromo';
+import { CarpetAuthAndModeration } from './components/CarpetAuthAndModeration';
+import { VirtualBoothTour360 } from './components/VirtualBoothTour360';
+import { TimedAuctionRoom } from './components/TimedAuctionRoom';
+import { MerchantServiceShop } from './components/MerchantServiceShop';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<AppLang>('fa');
@@ -96,6 +100,10 @@ export default function App() {
       {/* Main Tab Contents */}
       <main className="space-y-6">
         {activeTab === 'counter' && <BlessingCounter currentLang={currentLang} />}
+        {activeTab === 'authmod' && <CarpetAuthAndModeration currentLang={currentLang} />}
+        {activeTab === 'serviceshop' && <MerchantServiceShop currentLang={currentLang} />}
+        {activeTab === 'tour360' && <VirtualBoothTour360 currentLang={currentLang} />}
+        {activeTab === 'timedauction' && <TimedAuctionRoom currentLang={currentLang} />}
         {activeTab === 'booths' && (
           <BoothManager
             currentLang={currentLang}

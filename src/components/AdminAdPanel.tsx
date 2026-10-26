@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AppLang } from '../types';
+import { AdROIMetricsDashboard } from './AdROIMetricsDashboard';
 
 interface AdBanner {
   id: string;
@@ -56,6 +57,7 @@ export const AdminAdPanel: React.FC<AdminAdPanelProps> = ({ currentLang }) => {
   const [newExpires, setNewExpires] = useState('2026-12-31');
   const [adminPass, setAdminPass] = useState('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState<'my_ads' | 'dashboard'>('my_ads');
 
   const saveToStorage = (updated: AdBanner[]) => {
     setBanners(updated);
@@ -163,126 +165,151 @@ export const AdminAdPanel: React.FC<AdminAdPanelProps> = ({ currentLang }) => {
         </button>
       </div>
 
-      {/* Add New Ad Form */}
-      <form onSubmit={handleAddAd} className="bg-slate-900/90 rounded-2xl p-6 border border-amber-500/20 space-y-4 shadow-inner">
-        <h3 className="text-sm font-black text-amber-300 flex items-center gap-2">
-          <i className="fa-solid fa-plus-circle text-amber-400"></i>
-          <span>افزودن بنر تبلیغاتی جدید</span>
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">عنوان بنر:</label>
-            <input
-              type="text"
-              placeholder="مثال: حجره ویژه صادرکنندگان تبریز"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">توضیح کوتاه / شعار:</label>
-            <input
-              type="text"
-              placeholder="مثال: ارسال مستقیم با ضمانت اصالت"
-              value={newSubtitle}
-              onChange={(e) => setNewSubtitle(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">لینک تصویر بنر (URL):</label>
-            <input
-              type="url"
-              placeholder="https://images.unsplash.com/..."
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1">تاریخ انقضا:</label>
-            <input
-              type="date"
-              value={newExpires}
-              onChange={(e) => setNewExpires(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
-            />
-          </div>
-        </div>
-
+      <div className="flex gap-2 mb-6">
         <button
-          type="submit"
-          className="px-6 py-2.5 rounded-xl gold-grad text-slate-950 font-black text-xs shadow-lg hover:opacity-95 transition"
+          onClick={() => setActiveSubTab('my_ads')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+            activeSubTab === 'my_ads' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+          }`}
         >
-          ثبت و انتشار فوری بنر در اسلایدر برنامه
+          مدیریت بنرها
         </button>
-      </form>
+        <button
+          onClick={() => setActiveSubTab('dashboard')}
+          className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+            activeSubTab === 'dashboard' ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'
+          }`}
+        >
+          داشبورد ROI و CTR
+        </button>
+      </div>
 
-      {/* Existing Banners List */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-black text-amber-300 flex items-center gap-2">
-          <i className="fa-solid fa-list text-amber-400"></i>
-          <span>لیست بنرهای فعال و آرشیو ({banners.length})</span>
-        </h3>
+      {activeSubTab === 'my_ads' ? (
+        <>
+          {/* Add New Ad Form */}
+          <form onSubmit={handleAddAd} className="bg-slate-900/90 rounded-2xl p-6 border border-amber-500/20 space-y-4 shadow-inner">
+            <h3 className="text-sm font-black text-amber-300 flex items-center gap-2">
+              <i className="fa-solid fa-plus-circle text-amber-400"></i>
+              <span>افزودن بنر تبلیغاتی جدید</span>
+            </h3>
 
-        <div className="grid grid-cols-1 gap-4">
-          {banners.map((ad) => (
-            <div
-              key={ad.id}
-              className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border transition ${
-                ad.isActive
-                  ? 'bg-slate-900/80 border-amber-500/40 shadow-lg'
-                  : 'bg-slate-950/60 border-slate-800 opacity-60'
-              }`}
-            >
-              <div className="flex items-center gap-4 w-full md:w-auto">
-                <img
-                  src={ad.imageUrl}
-                  alt={ad.title}
-                  className="w-24 h-16 object-cover rounded-xl border border-slate-700 shrink-0"
-                  referrerPolicy="no-referrer"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">عنوان بنر:</label>
+                <input
+                  type="text"
+                  placeholder="مثال: حجره ویژه صادرکنندگان تبریز"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
                 />
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="text-sm font-bold text-white">{ad.title}</h4>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
-                      ad.isActive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
-                    }`}>
-                      {ad.isActive ? 'فعال در اسلایدر' : 'غیرفعال'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-300">{ad.subtitle}</p>
-                  <p className="text-[10px] text-slate-400">تاریخ انقضا: {ad.expiresAt}</p>
-                </div>
               </div>
 
-              <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-                <button
-                  onClick={() => toggleActive(ad.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                    ad.isActive
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  }`}
-                >
-                  {ad.isActive ? 'غیرفعال‌سازی' : 'فعال‌سازی'}
-                </button>
-                <button
-                  onClick={() => deleteAd(ad.id)}
-                  className="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold border border-red-500/30 transition"
-                >
-                  حذف
-                </button>
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">توضیح کوتاه / شعار:</label>
+                <input
+                  type="text"
+                  placeholder="مثال: ارسال مستقیم با ضمانت اصالت"
+                  value={newSubtitle}
+                  onChange={(e) => setNewSubtitle(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">لینک تصویر بنر (URL):</label>
+                <input
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 mb-1">تاریخ انقضا:</label>
+                <input
+                  type="date"
+                  value={newExpires}
+                  onChange={(e) => setNewExpires(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500"
+                />
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-xl gold-grad text-slate-950 font-black text-xs shadow-lg hover:opacity-95 transition"
+            >
+              ثبت و انتشار فوری بنر در اسلایدر برنامه
+            </button>
+          </form>
+
+          {/* Existing Banners List */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-black text-amber-300 flex items-center gap-2">
+              <i className="fa-solid fa-list text-amber-400"></i>
+              <span>لیست بنرهای فعال و آرشیو ({banners.length})</span>
+            </h3>
+
+            <div className="grid grid-cols-1 gap-4">
+              {banners.map((ad) => (
+                <div
+                  key={ad.id}
+                  className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border transition ${
+                    ad.isActive
+                      ? 'bg-slate-900/80 border-amber-500/40 shadow-lg'
+                      : 'bg-slate-950/60 border-slate-800 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center gap-4 w-full md:w-auto">
+                    <img
+                      src={ad.imageUrl}
+                      alt={ad.title}
+                      className="w-24 h-16 object-cover rounded-xl border border-slate-700 shrink-0"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-white">{ad.title}</h4>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
+                          ad.isActive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'
+                        }`}>
+                          {ad.isActive ? 'فعال در اسلایدر' : 'غیرفعال'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300">{ad.subtitle}</p>
+                      <p className="text-[10px] text-slate-400">تاریخ انقضا: {ad.expiresAt}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                    <button
+                      onClick={() => toggleActive(ad.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                        ad.isActive
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
+                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      {ad.isActive ? 'غیرفعال‌سازی' : 'فعال‌سازی'}
+                    </button>
+                    <button
+                      onClick={() => deleteAd(ad.id)}
+                      className="px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-bold border border-red-500/30 transition"
+                    >
+                      حذف
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <AdROIMetricsDashboard currentLang={currentLang} />
+      )}
     </div>
   );
 };

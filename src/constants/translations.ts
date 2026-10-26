@@ -99,6 +99,7 @@ const baseEn = {
   brandTitle: "Grand Digital Market of Iran & World Carpets",
   brandSub: "(Presented by Late Hossein Ali Miri & Sons)",
   brandSlogan: "Every carpet seller across Iran: A digital booth in the Grand Digital Market of Iran & World Carpets",
+  logoBadgeText: "Grand Digital Market of Iran & World Carpets",
   unionSellersTitle: "Handmade Rug Sellers & Weavers Union",
   unionSellersLink: "https://www.irancarpet.org",
   unionExportersTitle: "Iranian Handmade Rug Exporters Union",
