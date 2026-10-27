@@ -1,5 +1,9 @@
 {
   "appId": "com.alimiri.carpetbazaar",
   "appName": "بازار فرش علی‌میری",
-  "webDir": "dist"
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
 }

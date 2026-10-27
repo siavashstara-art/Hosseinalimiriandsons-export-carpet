@@ -824,8 +824,10 @@ interface PublicListingRecord {
   is_promoted: boolean;
   is_pinned: boolean;
   promotion_type: 'free' | 'excess_paid' | 'ladder' | 'pinned';
+  status: 'active' | 'expired' | 'deleted';
   payment_ref?: string;
   created_at: string;
+  expires_at: string;
 }
 
 const dbPublicListings: PublicListingRecord[] = [
@@ -854,7 +856,9 @@ const dbPublicListings: PublicListingRecord[] = [
     is_promoted: true,
     is_pinned: true,
     promotion_type: 'pinned',
-    created_at: new Date().toLocaleDateString('fa-IR')
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30-day golden vitrine
   },
   {
     id: 'pub-list-2',
@@ -881,14 +885,23 @@ const dbPublicListings: PublicListingRecord[] = [
     is_promoted: false,
     is_pinned: false,
     promotion_type: 'free',
-    created_at: new Date().toLocaleDateString('fa-IR')
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() // 14-day standard ad
   }
 ];
 
 // REST API: Get Public Home Carpet Listings
 app.get('/api/public-listings', (req, res) => {
   const { province, city, category, condition } = req.query;
-  let results = dbPublicListings;
+  const nowIso = new Date().toISOString();
+
+  // 1. Filter out deleted or expired listings server-side
+  let results = dbPublicListings.filter(l => {
+    if (l.status === 'deleted') return false;
+    if (l.expires_at && l.expires_at < nowIso) return false;
+    return true;
+  });
 
   if (category) {
     results = results.filter(l => l.category === category);
@@ -903,13 +916,22 @@ app.get('/api/public-listings', (req, res) => {
     results = results.filter(l => l.condition === condition);
   }
 
-  // Pinned / Promoted ads first
+  // 2. Strict prioritization: Golden Vitrine (pinned) in target province first, then other pinned, then promoted/regular
+  const targetProv = province && String(province) !== 'all' ? String(province) : '';
+
   results.sort((a, b) => {
+    const aIsMatchPinned = a.is_pinned && targetProv && (a.province.includes(targetProv) || targetProv.includes(a.province));
+    const bIsMatchPinned = b.is_pinned && targetProv && (b.province.includes(targetProv) || targetProv.includes(b.province));
+    if (aIsMatchPinned && !bIsMatchPinned) return -1;
+    if (!aIsMatchPinned && bIsMatchPinned) return 1;
+
     if (a.is_pinned && !b.is_pinned) return -1;
     if (!a.is_pinned && b.is_pinned) return 1;
+
     if (a.is_promoted && !b.is_promoted) return -1;
     if (!a.is_promoted && b.is_promoted) return 1;
-    return 0;
+
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 
   return res.json({ success: true, count: results.length, listings: results });
@@ -995,7 +1017,9 @@ app.post('/api/public-listings/create', (req, res) => {
     is_promoted: false,
     is_pinned: false,
     promotion_type: 'free',
-    created_at: new Date().toLocaleDateString('fa-IR')
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
   };
 
   dbPublicListings.unshift(newListing);
@@ -1009,11 +1033,50 @@ app.post('/api/public-listings/create', (req, res) => {
   });
 });
 
-// REST API: Promote or Pay Excess for Public Home Carpet Listing
+// ----------------------------------------------------
+// Loyalty & Rewards Data Structure & Helper
+// ----------------------------------------------------
+interface LoyaltyRecord {
+  user_phone: string;
+  normal_purchases_count: number;
+  golden_purchases_count: number;
+  free_normal_ads_awarded: number;
+  golden_bundles_awarded: number;
+  available_bonus_normal_ads: number;
+  available_bonus_golden_ads: number;
+  history: {
+    event: string;
+    description: string;
+    timestamp: string;
+  }[];
+}
+
+const dbLoyalty: Record<string, LoyaltyRecord> = {};
+
+function getOrCreateLoyalty(phone: string): LoyaltyRecord {
+  if (!dbLoyalty[phone]) {
+    dbLoyalty[phone] = {
+      user_phone: phone,
+      normal_purchases_count: 0,
+      golden_purchases_count: 0,
+      free_normal_ads_awarded: 0,
+      golden_bundles_awarded: 0,
+      available_bonus_normal_ads: 0,
+      available_bonus_golden_ads: 0,
+      history: []
+    };
+  }
+  return dbLoyalty[phone];
+}
+
+// REST API: Promote or Pay Excess for Public Home Carpet Listing (With Idempotent Loyalty Rewards)
 app.post('/api/public-listings/promote', (req, res) => {
   const { listing_id, promotion_type = 'ladder', payment_method = 'shetab' } = req.body;
 
   const listing = dbPublicListings.find(l => l.id === listing_id);
+  if (!listing) {
+    return res.status(404).json({ error: 'آگهی مورد نظر یافت نشد.' });
+  }
 
   const txRef = `HOME-PAY-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
 
@@ -1021,18 +1084,63 @@ app.post('/api/public-listings/promote', (req, res) => {
   if (promotion_type === 'excess_paid') feeToman = 200000;
   if (promotion_type === 'pinned') feeToman = 350000;
 
-  if (listing) {
-    if (promotion_type === 'ladder') {
-      listing.is_promoted = true;
-      listing.promotion_type = 'ladder';
-      // Move to top of array
-      const idx = dbPublicListings.indexOf(listing);
-      dbPublicListings.splice(idx, 1);
-      dbPublicListings.unshift(listing);
-    } else if (promotion_type === 'pinned') {
-      listing.is_pinned = true;
-      listing.is_promoted = true;
-      listing.promotion_type = 'pinned';
+  if (promotion_type === 'ladder') {
+    listing.is_promoted = true;
+    listing.promotion_type = 'ladder';
+    // Move to top of array
+    const idx = dbPublicListings.indexOf(listing);
+    dbPublicListings.splice(idx, 1);
+    dbPublicListings.unshift(listing);
+  } else if (promotion_type === 'pinned') {
+    listing.is_pinned = true;
+    listing.is_promoted = true;
+    listing.promotion_type = 'pinned';
+    // Golden Vitrine Rule: 30 days validity from promotion date
+    listing.expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  }
+
+  // Idempotent Loyalty Calculations
+  const loyalty = getOrCreateLoyalty(listing.seller_phone);
+  let loyaltyBonusMessage = '';
+
+  if (promotion_type === 'pinned') {
+    loyalty.golden_purchases_count += 1;
+    loyalty.history.push({
+      event: 'purchase_golden',
+      description: `خرید ویترین طلایی ۳۰ روزه برای آگهی ${listing.id}`,
+      timestamp: new Date().toISOString()
+    });
+
+    // Rule 2: Every 3 golden vitrine purchases -> 1 bundle (1 golden 30-day + 1 normal 14-day ad)
+    if (loyalty.golden_purchases_count % 3 === 0) {
+      loyalty.golden_bundles_awarded += 1;
+      loyalty.available_bonus_golden_ads += 1;
+      loyalty.available_bonus_normal_ads += 1;
+      loyalty.history.push({
+        event: 'reward_golden_bundle',
+        description: 'اعطای پاداش بسته طلایی (۱ ویترین طلایی ۳۰روزه + ۱ آگهی عادی ۱۴روزه)',
+        timestamp: new Date().toISOString()
+      });
+      loyaltyBonusMessage = ' تبریک! با ثبت سومین ویترین طلایی، یک بسته هدیه (ویترین طلایی ۳۰ روزه + آگهی عادی ۱۴ روزه) به حساب شما اضافه شد.';
+    }
+  } else {
+    loyalty.normal_purchases_count += 1;
+    loyalty.history.push({
+      event: 'purchase_normal',
+      description: `خرید ارتقای عادی/نردبان برای آگهی ${listing.id}`,
+      timestamp: new Date().toISOString()
+    });
+
+    // Rule 1: Every 5 eligible normal purchases -> 1 free 14-day ad
+    if (loyalty.normal_purchases_count % 5 === 0) {
+      loyalty.free_normal_ads_awarded += 1;
+      loyalty.available_bonus_normal_ads += 1;
+      loyalty.history.push({
+        event: 'reward_free_normal',
+        description: 'اعطای پاداش ۵ خرید عادی (۱ آگهی عادی ۱۴روزه رایگان)',
+        timestamp: new Date().toISOString()
+      });
+      loyaltyBonusMessage = ' تبریک! با ثبت پنجمین خرید، ۱ سهمیه آگهی عادی ۱۴ روزه رایگان به شما اهدا شد.';
     }
   }
 
@@ -1043,7 +1151,276 @@ app.post('/api/public-listings/promote', (req, res) => {
     amountPaidToman: feeToman,
     promotionType: promotion_type,
     listing,
-    message: 'تراکنش ارتقای آگهی خانگی با موفقیت تایید و آگهی شما در صدر لیست نردبان/پین گردید.'
+    loyalty: {
+      normalPurchases: loyalty.normal_purchases_count,
+      goldenPurchases: loyalty.golden_purchases_count,
+      availableBonusNormal: loyalty.available_bonus_normal_ads,
+      availableBonusGolden: loyalty.available_bonus_golden_ads
+    },
+    message: `تراکنش با موفقیت تایید و آگهی اعمال گردید.${loyaltyBonusMessage}`
+  });
+});
+
+// REST API: Get Loyalty Status
+app.get('/api/loyalty/status', (req, res) => {
+  const { phone } = req.query;
+  if (!phone) {
+    return res.status(400).json({ error: 'شماره تلفن الزامی است.' });
+  }
+  const cleanPhone = String(phone).replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[\s-]/g, '').trim();
+  const loyalty = getOrCreateLoyalty(cleanPhone);
+  return res.json({ success: true, loyalty });
+});
+
+// ----------------------------------------------------
+// Ad Deletion & Exit CSAT Survey
+// ----------------------------------------------------
+interface ExitSurveyRecord {
+  survey_id: string;
+  listing_id: string;
+  seller_phone: string;
+  reason: 'sold_on_platform' | 'sold_elsewhere' | 'regret' | 'price_issue' | 'other';
+  csat_score: number; // 1 to 5
+  feedback?: string;
+  deleted_at: string;
+}
+
+const dbExitSurveys: ExitSurveyRecord[] = [];
+
+// REST API: Delete Listing with Exit Survey
+app.post('/api/public-listings/delete', (req, res) => {
+  const { listing_id, phone, national_id, reason = 'sold_on_platform', csat_score = 5, feedback = '' } = req.body;
+
+  if (!listing_id) {
+    return res.status(400).json({ error: 'شناسه آگهی الزامی است.' });
+  }
+
+  const listing = dbPublicListings.find(l => l.id === listing_id);
+  if (!listing) {
+    return res.status(404).json({ error: 'آگهی مورد نظر یافت نشد.' });
+  }
+
+  // Authorization check: Verify phone or national ID matches seller
+  const cleanPhone = phone ? String(phone).replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[\s-]/g, '').trim() : '';
+  const cleanNatId = national_id ? String(national_id).replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).trim() : '';
+
+  if (cleanPhone && listing.seller_phone !== cleanPhone && (!cleanNatId || listing.national_id !== cleanNatId)) {
+    return res.status(403).json({ error: 'دسترسی غیرمجاز: تنها مالک آگهی مجاز به حذف آن می‌باشد.' });
+  }
+
+  // Mark status as deleted
+  listing.status = 'deleted';
+
+  // Store Exit CSAT Survey
+  const surveyRecord: ExitSurveyRecord = {
+    survey_id: `srv-${Date.now()}`,
+    listing_id,
+    seller_phone: listing.seller_phone,
+    reason,
+    csat_score: Math.min(5, Math.max(1, Number(csat_score) || 5)),
+    feedback: String(feedback).slice(0, 500),
+    deleted_at: new Date().toISOString()
+  };
+
+  dbExitSurveys.push(surveyRecord);
+
+  return res.json({
+    success: true,
+    message: 'آگهی با موفقیت حذف گردید و بازخورد شما در نظرسنجی خروج ثبت شد.',
+    survey_id: surveyRecord.survey_id
+  });
+});
+
+// ----------------------------------------------------
+// Directory of Guilds (دایرکتوری اصناف فرش)
+// قالیشویی، رفوگری، دارکشی، عدلبندی، باربری تخصصی، خدمات گمرکی
+// ----------------------------------------------------
+type GuildCategory =
+  | 'carpet_washing'       // قالیشویی
+  | 'carpet_repair'        // رفوگری و مرمت
+  | 'loom_stretching'      // دارکشی
+  | 'baling_packing'       // عدلبندی و بسته‌بندی
+  | 'specialized_transit'  // باربری تخصصی فرش
+  | 'customs_export';      // خدمات گمرکی و ترخیص
+
+interface GuildListingRecord {
+  id: string;
+  guild_category: GuildCategory;
+  category_name_fa: string;
+  business_name: string;
+  manager_name: string;
+  phone: string;
+  phone_masked: string;
+  national_id: string;
+  province: string;
+  city: string;
+  address: string;
+  license_number: string;
+  experience_years: number;
+  description: string;
+  is_free_quota: boolean;
+  status: 'active' | 'expired';
+  created_at: string;
+  expires_at: string;
+}
+
+const categoryNamesFa: Record<GuildCategory, string> = {
+  carpet_washing: 'قالیشویی مجاز و شستشوی سنتی',
+  carpet_repair: 'رفوگری و مرمت تخصصی قالی',
+  loom_stretching: 'دارکشی و رفع کجی فرش',
+  baling_packing: 'عدلبندی و بسته‌بندی ضد آب صادراتی',
+  specialized_transit: 'باربری تخصصی و حمل مجهز فرش',
+  customs_export: 'خدمات گمرکی، ارزیابی و ترخیص صادرات'
+};
+
+const dbGuildListings: GuildListingRecord[] = [
+  {
+    id: 'guild-1',
+    guild_category: 'carpet_washing',
+    category_name_fa: categoryNamesFa['carpet_washing'],
+    business_name: 'قالیشویی سنتی اوغلی بازار',
+    manager_name: 'استاد رحمانی',
+    phone: '09121113355',
+    phone_masked: '۰۹۱۲***۳۳۵۵',
+    national_id: '0012349999',
+    province: 'تهران',
+    city: 'تهران (بازار بزرگ)',
+    address: 'خیابان پانزده خرداد، بازار آهنگران',
+    license_number: 'صنف-۹۸۲۱',
+    experience_years: 35,
+    description: 'شستشوی سنتی و مکانیزه فرش‌های دستباف، عتیقه، چله ابریشم و اعلا با مواد گیاهی بدون تثبیت‌کننده شیمیایی.',
+    is_free_quota: true,
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+  },
+  {
+    id: 'guild-2',
+    guild_category: 'carpet_repair',
+    category_name_fa: categoryNamesFa['carpet_repair'],
+    business_name: 'کارگاه رفوگری استاد کمالی',
+    manager_name: 'استاد کمالی',
+    phone: '09142224466',
+    phone_masked: '۰۹۱۴***۴۴۶۶',
+    national_id: '1378887766',
+    province: 'آذربایجان شرقی',
+    city: 'تبریز (سرای مظفریه)',
+    address: 'سرای مظفریه، طبقه دوم، پلاک ۴۴',
+    license_number: 'رفو-۴۱۲',
+    experience_years: 28,
+    description: 'گره‌بافی مجدد، بیدزدایی، رنگ‌برداری اصولی و ترمیم سوختگی و پارگی انواع قالی‌های موزه‌ای و عتیقه.',
+    is_free_quota: true,
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+  }
+];
+
+// REST API: Get Guild Listings
+app.get('/api/guilds', (req, res) => {
+  const { category, province } = req.query;
+  const nowIso = new Date().toISOString();
+
+  let results = dbGuildListings.filter(g => {
+    if (g.status === 'expired' || g.expires_at < nowIso) return false;
+    return true;
+  });
+
+  if (category && category !== 'all') {
+    results = results.filter(g => g.guild_category === category);
+  }
+  if (province && province !== 'all') {
+    results = results.filter(g => g.province.includes(String(province)) || String(province).includes(g.province));
+  }
+
+  return res.json({
+    success: true,
+    count: results.length,
+    guilds: results
+  });
+});
+
+// REST API: Register Guild Listing (Rule: 2 Free 14-day Ads per Guild Category per National ID)
+app.post('/api/guilds/register', (req, res) => {
+  const {
+    guild_category,
+    business_name,
+    manager_name,
+    phone,
+    national_id,
+    province,
+    city,
+    address,
+    license_number = 'در دست استعلام',
+    experience_years = 5,
+    description
+  } = req.body;
+
+  if (!guild_category || !business_name || !manager_name || !phone || !national_id || !province || !city) {
+    return res.status(400).json({ error: 'لطفاً تمامی موارد الزامی شامل صنف، نام واحد، نام مدیر، شماره تماس، کد ملی و استان/شهر را وارد فرمایید.' });
+  }
+
+  if (!isValidNationalId(national_id)) {
+    return res.status(400).json({ error: 'کد ملی وارد شده نامعتبر است.' });
+  }
+
+  if (!isValidMobileNumber(phone)) {
+    return res.status(400).json({ error: 'شماره همراه وارد شده نامعتبر است.' });
+  }
+
+  const cleanNat = national_id.replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).trim();
+  const cleanPhone = phone.replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/[\s-]/g, '').trim();
+
+  // Rule: Check existing active guild ads by this national ID in this specific category (Max 2 free 14-day ads)
+  const GUILD_FREE_QUOTA_MAX = 2;
+  const nowIso = new Date().toISOString();
+  const existingActiveGuildAds = dbGuildListings.filter(g =>
+    g.national_id === cleanNat &&
+    g.guild_category === guild_category &&
+    g.expires_at >= nowIso
+  );
+
+  if (existingActiveGuildAds.length >= GUILD_FREE_QUOTA_MAX) {
+    return res.json({
+      success: true,
+      requiresPayment: true,
+      feeToman: 300000,
+      guildFreeQuotaMax: GUILD_FREE_QUOTA_MAX,
+      message: `سهمیه ۲ آگهی رایگان شما برای صنف «${categoryNamesFa[guild_category as GuildCategory] || guild_category}» تکمیل شده است. جهت ثبت آگهی مازاد به درگاه بانکی متصل می‌شوید.`
+    });
+  }
+
+  const maskedPhone = cleanPhone.slice(0, 4) + '***' + cleanPhone.slice(7);
+
+  const newGuildRecord: GuildListingRecord = {
+    id: `guild-${Date.now()}`,
+    guild_category: guild_category as GuildCategory,
+    category_name_fa: categoryNamesFa[guild_category as GuildCategory] || 'خدمات تخصصی فرش',
+    business_name,
+    manager_name,
+    phone: cleanPhone,
+    phone_masked: maskedPhone,
+    national_id: cleanNat,
+    province,
+    city,
+    address: address || 'آدرس ثبت شده',
+    license_number,
+    experience_years: Number(experience_years) || 1,
+    description: description || 'خدمات تخصصی صنف فرش',
+    is_free_quota: true,
+    status: 'active',
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() // 14-day rule
+  };
+
+  dbGuildListings.unshift(newGuildRecord);
+
+  return res.json({
+    success: true,
+    requiresPayment: false,
+    message: 'واحد صنفی شما با موفقیت در دایرکتوری اصناف با سهمیه رایگان ۱۴ روزه ثبت گردید.',
+    remainingQuota: GUILD_FREE_QUOTA_MAX - (existingActiveGuildAds.length + 1),
+    guild: newGuildRecord
   });
 });
 
