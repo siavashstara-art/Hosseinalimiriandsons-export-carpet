@@ -1,132 +1,324 @@
 @import "tailwindcss";
 
+/* ========================================================
+   MASTER ACCESSIBILITY & HIGH CONTRAST TYPOGRAPHY SYSTEM
+   (No blurry gray, no faint text, solid 100% readability)
+   ======================================================== */
+
+html {
+  font-size: 18.5px !important;
+}
+
 body {
   font-family: 'Vazirmatn', sans-serif;
-  background-color: #040711;
-  color: #f8fafc;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  font-size: 1.1rem !important;
+  line-height: 1.85 !important;
+  letter-spacing: 0.015em;
+  font-weight: 700 !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Remove all distracting background dots that cause visual blur */
+.rug-pattern {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+body.light-mode .rug-pattern {
+  background-color: #ffffff !important;
+  background-image: none !important;
 }
 
 body.light-mode {
-  background-color: #f8f5f0;
-  color: #1e293b;
+  background-color: #ffffff !important;
+  color: #000000 !important;
 }
 
-@layer utilities {
-  .glass-card {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(245, 158, 11, 0.22);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
-
-  body.light-mode .glass-card {
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(217, 119, 6, 0.3);
-    color: #1e293b;
-    box-shadow: 0 10px 25px -5px rgba(217, 119, 6, 0.1);
-  }
-
-  .glass-card-amber {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(245, 158, 11, 0.35);
-  }
-
-  body.light-mode .glass-card-amber {
-    background: linear-gradient(135deg, rgba(254, 243, 199, 0.8) 0%, rgba(255, 255, 255, 0.95) 100%);
-    border: 1px solid rgba(217, 119, 6, 0.4);
-    color: #1e293b;
-  }
-
-  .gold-grad {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
-  }
-
-  .gold-grad-light {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde047 50%, #f59e0b 100%);
-  }
-
-  .gold-text {
-    background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  body.light-mode .gold-text {
-    background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #b45309 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .rug-pattern {
-    background-color: #030712;
-    background-image: 
-      radial-gradient(rgba(245, 158, 11, 0.07) 1px, transparent 1px),
-      radial-gradient(rgba(217, 119, 6, 0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-position: 0 0, 12px 12px;
-  }
-
-  body.light-mode .rug-pattern {
-    background-color: #f8f5f0;
-    background-image: 
-      radial-gradient(rgba(180, 83, 9, 0.12) 1px, transparent 1px),
-      radial-gradient(rgba(217, 119, 6, 0.08) 1px, transparent 1px);
-  }
+/* Eradicate muddy gray semi-transparent glass cards */
+.glass-card,
+.glass-card-amber,
+div[class*="glass"] {
+  background: #05070f !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 2.5px solid #f59e0b !important;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 1) !important;
 }
 
-/* Light mode overrides for text, inputs, buttons */
+body.light-mode .glass-card,
+body.light-mode .glass-card-amber,
+body.light-mode div[class*="glass"] {
+  background: #ffffff !important;
+  border: 2.5px solid #b45309 !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 20px rgba(180, 83, 9, 0.15) !important;
+}
+
+/* Eliminate murky gray backgrounds inside cards */
+body:not(.light-mode) .bg-slate-900,
+body:not(.light-mode) .bg-slate-950,
+body:not(.light-mode) .bg-slate-800,
+body:not(.light-mode) .bg-slate-900\/60,
+body:not(.light-mode) .bg-slate-900\/80,
+body:not(.light-mode) .bg-slate-900\/90,
+body:not(.light-mode) .bg-slate-950\/60,
+body:not(.light-mode) .bg-slate-950\/80,
+body:not(.light-mode) .bg-slate-950\/90 {
+  background-color: #05070e !important;
+  border: 1.5px solid #f59e0b !important;
+}
+
+body:not(.light-mode) .border-slate-800,
+body:not(.light-mode) .border-slate-700 {
+  border-color: #f59e0b !important;
+}
+
+/* Solid radiant gold gradients */
+.gold-grad {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+/* Replace transparent gradient text with crisp, solid 24k gold text */
+.gold-text {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #fde047 !important;
+  color: #fde047 !important;
+  font-weight: 900 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 1) !important;
+}
+
+body.light-mode .gold-text {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #78350f !important;
+  color: #78350f !important;
+  font-weight: 900 !important;
+}
+
+/* ALL text elements MUST be bold and pure high contrast */
+body:not(.light-mode) p,
+body:not(.light-mode) span,
+body:not(.light-mode) div,
+body:not(.light-mode) label,
+body:not(.light-mode) li,
+body:not(.light-mode) strong {
+  font-weight: 700;
+}
+
+/* Never allow faint or washed out gray fonts anywhere */
+body:not(.light-mode) .text-slate-400,
+body:not(.light-mode) .text-slate-500,
+body:not(.light-mode) .text-slate-600,
+body:not(.light-mode) .text-slate-300,
+body:not(.light-mode) .text-gray-400,
+body:not(.light-mode) .text-gray-300,
+body:not(.light-mode) .text-slate-200 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Golden text is always super-bright and readable */
+body:not(.light-mode) .text-amber-200,
+body:not(.light-mode) .text-amber-300,
+body:not(.light-mode) .text-amber-400 {
+  color: #fde047 !important;
+  font-weight: 900 !important;
+}
+
+/* Eliminate tiny micro-fonts across the entire app */
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\] {
+  font-size: 0.95rem !important;
+  font-weight: 800 !important;
+  line-height: 1.5 !important;
+}
+
+.text-xs {
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  line-height: 1.6 !important;
+}
+
+.text-sm {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  line-height: 1.7 !important;
+}
+
+.text-base {
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  line-height: 1.75 !important;
+}
+
+/* Form inputs: Large, clear, thick border, no tiny fonts */
+input,
+textarea,
+select {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.85rem !important;
+  border-width: 2.5px !important;
+}
+
+body:not(.light-mode) input,
+body:not(.light-mode) textarea,
+body:not(.light-mode) select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #f59e0b !important;
+}
+
+/* Buttons: Bold, readable, high contrast */
+button {
+  font-weight: 900 !important;
+  font-size: 1.05rem !important;
+}
+
+/* Light mode overrides */
+body.light-mode p,
+body.light-mode span,
+body.light-mode div,
+body.light-mode label,
+body.light-mode li,
+body.light-mode strong,
 body.light-mode .text-slate-100,
 body.light-mode .text-slate-200,
-body.light-mode .text-slate-300 {
-  color: #1e293b !important;
+body.light-mode .text-slate-300,
+body.light-mode .text-slate-400,
+body.light-mode .text-slate-500,
+body.light-mode .text-gray-400 {
+  color: #000000 !important;
+  font-weight: 700 !important;
 }
 
-body.light-mode .text-slate-400 {
-  color: #475569 !important;
-}
-
+body.light-mode .text-amber-200,
 body.light-mode .text-amber-300,
 body.light-mode .text-amber-400 {
-  color: #b45309 !important;
+  color: #78350f !important;
+  font-weight: 900 !important;
 }
 
 body.light-mode input,
 body.light-mode textarea,
 body.light-mode select {
   background-color: #ffffff !important;
-  color: #1e293b !important;
-  border-color: #cbd5e1 !important;
+  color: #000000 !important;
+  border-color: #78350f !important;
 }
 
 body.light-mode .bg-slate-900,
-body.light-mode .bg-slate-950 {
-  background-color: #f3ece0 !important;
-  border-color: #e2d1b8 !important;
-  color: #1e293b !important;
+body.light-mode .bg-slate-950,
+body.light-mode .bg-slate-800 {
+  background-color: #f8f5f0 !important;
+  border-color: #b45309 !important;
+  color: #000000 !important;
 }
 
-body.light-mode .border-slate-800 {
-  border-color: #e2d1b8 !important;
+body.light-mode .border-slate-800,
+body.light-mode .border-slate-700 {
+  border-color: #b45309 !important;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #030712;
+  background: #000000;
 }
 body.light-mode ::-webkit-scrollbar-track {
-  background: #f8f5f0;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(245, 158, 11, 0.3);
+  background: #f59e0b;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.6);
+
+/* Ultra High Contrast Mode (WCAG AAA - Ratio 21:1) */
+body.ultra-high-contrast {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+body.ultra-high-contrast .glass-card,
+body.ultra-high-contrast .glass-card-amber,
+body.ultra-high-contrast div[class*="glass"] {
+  background: #000000 !important;
+  border: 3.5px solid #facc15 !important;
+}
+body.ultra-high-contrast * {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+body.ultra-high-contrast input,
+body.ultra-high-contrast textarea,
+body.ultra-high-contrast select {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 3px solid #facc15 !important;
+}
+body.ultra-high-contrast button {
+  border: 3px solid #ffffff !important;
+}
+
+/* Font Size Scaling from Accessibility Bar */
+body.font-size-large {
+  font-size: 1.25rem !important;
+}
+body.font-size-large h1 {
+  font-size: 3rem !important;
+}
+body.font-size-large h2 {
+  font-size: 2.25rem !important;
+}
+body.font-size-large p,
+body.font-size-large span,
+body.font-size-large button,
+body.font-size-large input {
+  font-size: 1.25rem !important;
+}
+
+body.font-size-xlarge {
+  font-size: 1.45rem !important;
+}
+body.font-size-xlarge h1 {
+  font-size: 3.5rem !important;
+}
+body.font-size-xlarge h2 {
+  font-size: 2.6rem !important;
+}
+body.font-size-xlarge p,
+body.font-size-xlarge span,
+body.font-size-xlarge button,
+body.font-size-xlarge input {
+  font-size: 1.4rem !important;
+}
+
+/* ADHD Readability Spacing */
+body.adhd-spacing {
+  line-height: 2.3 !important;
+  word-spacing: 0.16em !important;
+  letter-spacing: 0.04em !important;
+}
+body.adhd-spacing p,
+body.adhd-spacing span {
+  line-height: 2.5 !important;
+}
+
+/* Reduce Motion */
+body.reduce-motion *,
+body.reduce-motion *::before,
+body.reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }

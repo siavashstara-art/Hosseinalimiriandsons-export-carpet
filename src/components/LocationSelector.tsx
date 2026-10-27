@@ -46,21 +46,21 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   return (
     <div className="space-y-3">
       {/* Location Selector Bar */}
-      <div className="glass-card p-3.5 rounded-2xl border border-amber-500/30 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="glass-card p-4 rounded-3xl border-2 border-amber-400 shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4 bg-black">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
-            <i className="fa-solid fa-map-location-dot text-lg"></i>
+          <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 shadow-lg font-black">
+            <i className="fa-solid fa-map-location-dot text-xl"></i>
           </div>
 
           <div>
-            <div className="text-[11px] text-amber-300 font-bold flex items-center gap-1.5">
-              <span>موقعیت جغرافیایی فعال بازار:</span>
-              <span className="text-[10px] text-slate-400">(تفکیک منطقه‌ای غرفه‌ها و آگهی‌ها)</span>
+            <div className="text-xs sm:text-sm text-white font-black flex items-center gap-2">
+              <span className="text-amber-300">موقعیت جغرافیایی فعال بازار:</span>
+              <span className="text-white text-xs bg-black px-2.5 py-0.5 rounded-lg border border-amber-400/70">(تفکیک استانی غرفه‌ها)</span>
             </div>
-            <div className="text-sm font-black gold-text flex items-center gap-2">
-              <span>{currentProvinceName}</span>
+            <div className="text-base sm:text-lg font-black text-white flex items-center gap-2 pt-1">
+              <span className="text-amber-300">{currentProvinceName}</span>
               {selectedCity !== 'all' && (
-                <span className="text-xs font-bold text-slate-300 bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800">
+                <span className="text-xs sm:text-sm font-black text-white bg-black px-3 py-1 rounded-xl border-2 border-amber-400">
                   شهر: {selectedCity}
                 </span>
               )}
@@ -71,7 +71,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
         {/* Change Location Button */}
         <button
           onClick={() => setIsOpenModal(true)}
-          className="px-4 py-2.5 rounded-xl gold-grad text-slate-950 font-black text-xs shadow-lg hover:scale-105 transition flex items-center gap-2 shrink-0"
+          className="px-5 py-3 rounded-2xl gold-grad text-slate-950 font-black text-sm shadow-xl hover:scale-105 transition flex items-center gap-2 shrink-0"
         >
           <i className="fa-solid fa-building-flag"></i>
           <span>تغییر استان / شهر (۳۱ استان)</span>
@@ -79,8 +79,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
       </div>
 
       {/* Quick Location Chips */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-        <span className="text-[11px] font-bold text-amber-300 shrink-0 ml-1">دسترسی سریع:</span>
+      <div className="flex items-center gap-2 overflow-x-auto pb-1.5 scrollbar-none text-xs sm:text-sm">
+        <span className="text-xs sm:text-sm font-black text-white shrink-0 ml-1">دسترسی سریع:</span>
         {POPULAR_PROVINCES.map((p) => {
           const isSelected = selectedProvinceId === p.id && selectedCity === 'all';
           return (
@@ -94,10 +94,10 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                   onSelectRegion(p.id, found?.nameFa || p.nameFa, 'all');
                 }
               }}
-              className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition shrink-0 text-xs ${
+              className={`px-4 py-2 rounded-xl font-black whitespace-nowrap transition shrink-0 text-xs sm:text-sm ${
                 isSelected
-                  ? 'gold-grad text-slate-950 shadow-md font-black'
-                  : 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border border-slate-800'
+                  ? 'gold-grad text-slate-950 shadow-lg border-2 border-amber-300 scale-105'
+                  : 'bg-black hover:bg-slate-900 text-white border-2 border-amber-400/70'
               }`}
             >
               <span>{p.nameFa}</span>

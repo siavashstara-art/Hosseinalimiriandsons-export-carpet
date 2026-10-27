@@ -342,6 +342,41 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ currentLang }) => {
               <span>{t.shareBtn}</span>
             </button>
           </div>
+
+          {/* Social Platforms Direct Actions */}
+          <div className="w-full pt-2 border-t border-slate-800 space-y-2">
+            <div className="text-[11px] font-bold text-slate-400 text-center">انتشار مستقیم در شبکه‌های اجتماعی:</div>
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={`https://t.me/share/url?url=${encodeURIComponent('https://alimiri-carpet.ir')}&text=${encodeURIComponent(`✨ ${title}\n📍 ${details}\n💰 ${price}\n📞 ${phone}\n🏛️ بازار بزرگ دیجیتال فرش ایران و جهان (مرحوم حسین علی میری و پسران)`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow transition"
+              >
+                <i className="fa-brands fa-telegram text-sm"></i>
+                <span>کانال یا پی‌وی تلگرام</span>
+              </a>
+
+              <button
+                onClick={handleShare}
+                className="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow transition"
+              >
+                <i className="fa-brands fa-instagram text-sm"></i>
+                <span>استوری اینستاگرام</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Step-by-Step Guide */}
+          <div className="w-full bg-slate-900/90 rounded-xl p-3 border border-amber-500/30 text-[11px] text-slate-300 space-y-1 text-right">
+            <div className="font-bold text-amber-300 flex items-center gap-1.5">
+              <i className="fa-solid fa-circle-info text-amber-400"></i>
+              <span>راهنمای کارکرد استوریساز:</span>
+            </div>
+            <p>۱. عکس قالی را آپلود کرده و عنوان، چله و قیمت را بنویسید.</p>
+            <p>۲. پوسته طراحی مورد نظر (طلایی، آبسیدین، اسلیمی، مینیمال) را برگزینید.</p>
+            <p>۳. دکمه «دانلود استوری» را بزنید و مستقیماً در استوری اینستاگرام و تلگرام خود بارگذاری فرمایید.</p>
+          </div>
         </div>
       </div>
     </section>

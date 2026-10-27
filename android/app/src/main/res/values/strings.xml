@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">بازار فرش علی‌میری</string>
+    <string name="title_activity_main">بازار فرش علی‌میری</string>
+    <string name="package_name">com.alimiri.carpetbazaar</string>
+    <string name="custom_url_scheme">com.alimiri.carpetbazaar</string>
+</resources>

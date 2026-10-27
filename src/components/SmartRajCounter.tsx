@@ -124,38 +124,40 @@ export const SmartRajCounter: React.FC<SmartRajCounterProps> = ({ currentLang })
   };
 
   return (
-    <section className="glass-card rounded-2xl p-5 md:p-6 space-y-6 shadow-xl">
-      <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-2">
-        <h2 className="text-sm md:text-base font-bold text-amber-400 flex items-center gap-2">
-          <i className="fa-solid fa-camera-retro text-amber-400 text-lg"></i>
-          <span>{t.rajTitle}</span>
+    <section className="glass-card rounded-3xl p-5 md:p-7 space-y-6 shadow-2xl border-2 border-amber-500/40">
+      <div className="flex flex-wrap items-center justify-between border-b-2 border-slate-800 pb-4 gap-3">
+        <h2 className="text-base sm:text-xl font-black text-white flex items-center gap-2.5">
+          <span className="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black shadow">
+            <i className="fa-solid fa-camera-retro text-lg"></i>
+          </span>
+          <span className="text-white">{t.rajTitle}</span>
         </h2>
-        <span className="text-xs bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full font-bold border border-amber-500/30">
+        <span className="text-xs sm:text-sm bg-slate-950 text-white px-4 py-2 rounded-xl font-black border-2 border-amber-400 shadow-md">
           {t.rajScale}
         </span>
       </div>
 
       {/* Input Options Split: Camera Upload vs Manual Entry */}
-      <div className="grid md:grid-cols-2 gap-5 text-xs">
+      <div className="grid md:grid-cols-2 gap-5 text-sm">
         {/* Camera / Image Upload Dropzone */}
         <div className="space-y-3">
-          <label className="flex flex-col items-center justify-center border-2 border-dashed border-amber-500/40 hover:border-amber-500 rounded-2xl p-6 cursor-pointer bg-slate-900/60 hover:bg-slate-900 transition group relative overflow-hidden min-h-[180px]">
+          <label className="flex flex-col items-center justify-center border-2 border-amber-400 rounded-3xl p-6 cursor-pointer bg-slate-950 hover:bg-slate-900 transition group relative overflow-hidden min-h-[200px] shadow-xl">
             {selectedImage ? (
               <img
                 src={selectedImage}
                 alt="Rug Back Capture"
-                className="w-full h-36 object-cover rounded-xl border border-amber-500/30"
+                className="w-full h-44 object-cover rounded-2xl border-2 border-amber-400"
               />
             ) : (
               <>
-                <div className="w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center mb-2 group-hover:scale-110 transition">
-                  <i className="fa-solid fa-camera text-amber-400 text-2xl"></i>
+                <div className="w-16 h-16 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center mb-3 group-hover:scale-110 transition shadow-lg">
+                  <i className="fa-solid fa-camera text-2xl"></i>
                 </div>
-                <span className="font-bold text-amber-200 text-center text-xs md:text-sm">
+                <span className="font-black text-white text-center text-sm sm:text-base">
                   {t.cameraBtn}
                 </span>
-                <span className="text-[11px] text-slate-400 text-center mt-1">
-                  عکس از پشت فرش (۷ سانتیمتر) بگیرید یا فایل آن را انتخاب کنید
+                <span className="text-xs sm:text-sm font-bold text-slate-200 text-center mt-2 leading-relaxed bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
+                  📷 عکس از پشت فرش (۷ سانتیمتر) بگیرید یا فایل آن را انتخاب کنید
                 </span>
               </>
             )}
@@ -169,46 +171,46 @@ export const SmartRajCounter: React.FC<SmartRajCounterProps> = ({ currentLang })
           </label>
 
           {isAnalyzing && (
-            <div className="glass-card-amber p-3.5 rounded-xl text-center space-y-2">
-              <i className="fa-solid fa-spinner fa-spin text-amber-400 text-xl"></i>
-              <div className="text-xs font-bold text-amber-200">{t.aiKnotAnalyzing}</div>
+            <div className="bg-slate-950 border-2 border-amber-400 p-4 rounded-2xl text-center space-y-2 shadow-xl">
+              <i className="fa-solid fa-spinner fa-spin text-amber-400 text-2xl"></i>
+              <div className="text-sm font-black text-white">{t.aiKnotAnalyzing}</div>
             </div>
           )}
 
           {errorMessage && (
-            <div className="bg-rose-950/50 border border-rose-500/40 text-rose-300 p-3 rounded-xl text-xs">
-              <i className="fa-solid fa-triangle-exclamation me-1.5"></i>
+            <div className="bg-rose-950 border-2 border-rose-500 text-white p-4 rounded-2xl text-xs sm:text-sm font-bold">
+              <i className="fa-solid fa-triangle-exclamation me-1.5 text-rose-400"></i>
               {errorMessage}
             </div>
           )}
         </div>
 
         {/* Manual Knot Input Box */}
-        <div className="glass-card p-5 rounded-2xl flex flex-col justify-between space-y-4 border border-slate-800">
-          <div className="space-y-3">
-            <div className="text-slate-300 font-bold text-xs flex items-center gap-1.5">
-              <i className="fa-solid fa-ruler-combined text-amber-400"></i>
+        <div className="bg-slate-950 p-6 rounded-3xl flex flex-col justify-between space-y-5 border-2 border-amber-400/80 shadow-xl">
+          <div className="space-y-4">
+            <div className="text-white font-black text-sm sm:text-base flex items-center gap-2 border-b border-slate-800 pb-2">
+              <i className="fa-solid fa-ruler-combined text-amber-400 text-lg"></i>
               <span>{t.manualGuide}</span>
             </div>
 
-            <div className="flex justify-between items-center text-slate-200 border-b border-slate-800 pb-3">
-              <span className="font-semibold">{t.knotsLabel}</span>
+            <div className="flex justify-between items-center text-white border-b border-slate-800 pb-4">
+              <span className="font-black text-sm sm:text-base">{t.knotsLabel}</span>
               <input
                 type="number"
                 value={manualKnots}
                 onChange={(e) => setManualKnots(e.target.value)}
                 placeholder="مثلاً ۵۰"
-                className="w-28 bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-center text-amber-300 text-base font-black focus:border-amber-500 focus:outline-none"
+                className="w-32 bg-black border-2 border-amber-400 rounded-2xl p-3 text-center text-white text-xl font-black focus:ring-2 focus:ring-amber-300 focus:outline-none shadow-inner"
               />
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
-              * خط‌کش ۷ سانتیمتری روی پشت فرش قرار داده و گره‌های موازی در ۷ سانت را بشمارید.
+            <p className="text-xs sm:text-sm font-bold text-slate-200 leading-relaxed bg-slate-900/90 p-3 rounded-2xl border border-slate-800">
+              📏 <strong className="text-white">روش کار:</strong> خط‌کش ۷ سانتیمتری را روی پشت فرش قرار داده و تعداد گره‌های در امتداد ۷ سانت را بشمارید.
             </p>
           </div>
 
           <button
             onClick={calculateManual}
-            className="w-full gold-grad text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg active:scale-95 transition"
+            className="w-full gold-grad text-slate-950 font-black py-4 rounded-2xl text-sm sm:text-base shadow-xl active:scale-95 transition hover:opacity-95"
           >
             {t.calcBtn}
           </button>
@@ -291,18 +293,58 @@ export const SmartRajCounter: React.FC<SmartRajCounterProps> = ({ currentLang })
         </div>
       )}
 
-      {/* Visual Reference Backdrop */}
-      <div className="border border-slate-800 rounded-2xl p-4 bg-slate-950/60 flex flex-wrap md:flex-nowrap items-center gap-4 text-xs">
-        <img
-          src={sampleKnotImg}
-          alt="Sample Knot Backing"
-          className="w-16 h-16 rounded-xl object-cover border border-amber-500/30 shrink-0"
-        />
-        <div className="space-y-1">
-          <div className="font-bold text-amber-300">راهنمای کارشناسی رجشمار حجره میری:</div>
-          <p className="text-slate-400 leading-relaxed text-[11px]">
-            در بازار بزرگ فرش ایران، «رج» به تعداد گره‌های بافته‌شده در ۷ سانتیمتر گویند. فرش‌های تبریز، قم و اصفهان بیشترین دقت در استاندارد ۷ سانتیمتر را دارند.
-          </p>
+      {/* Visual Reference Backdrop & Official Miri Bazaar Guide - High Contrast WCAG AAA */}
+      <div className="border-2 border-amber-400 rounded-3xl p-6 bg-slate-950 shadow-2xl space-y-5">
+        <div className="flex flex-col sm:flex-row items-center gap-5 border-b-2 border-slate-800 pb-5">
+          <div className="relative shrink-0">
+            <img
+              src={sampleKnotImg}
+              alt="نمونه گره و ردشمار پشت فرش ایرانی"
+              className="w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover border-2 border-amber-400 shadow-2xl"
+            />
+            <div className="absolute -bottom-2 -right-2 bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-1 rounded-lg shadow-lg">
+              مقیاس ۷ سانت
+            </div>
+          </div>
+
+          <div className="space-y-1.5 text-center sm:text-right">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 text-xs sm:text-sm font-black mb-1 shadow">
+              <i className="fa-solid fa-certificate"></i>
+              <span>راهنمای کارشناسی تخصصی اصالت بافت</span>
+            </div>
+            <h3 className="text-lg md:text-2xl font-black text-white leading-tight">
+              راهنمای رج‌شمار و ردشمار حجره حاج حسین‌علی میری و پسران
+            </h3>
+            <p className="text-xs sm:text-sm font-bold text-slate-200">
+              استانداردهای اصیل بازارهای سنتی تبریز، اصفهان، کاشان، قم، نایین و مشهد
+            </p>
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4 text-sm font-bold leading-relaxed">
+          <div className="bg-slate-900 p-5 rounded-2xl border-2 border-slate-700 space-y-2 shadow-lg">
+            <div className="text-white text-base font-black flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm shrink-0">
+                <i className="fa-solid fa-ruler"></i>
+              </span>
+              <span>تعریف سنتی «رج» و «رد» در بازار:</span>
+            </div>
+            <p className="text-slate-100 text-xs sm:text-sm font-bold leading-loose">
+              در بازار بزرگ فرش ایران، «رج» یا «رد» به تعداد گره‌های موازی بافته‌شده در ۷ سانتیمتر در امتداد چله گویند. هرچه تعداد گره در این مقیاس بیشتر باشد، بافت فرش ریزتر، فشرده‌تر و ارزش هنری آن چندبرابر است.
+            </p>
+          </div>
+
+          <div className="bg-slate-900 p-5 rounded-2xl border-2 border-slate-700 space-y-2 shadow-lg">
+            <div className="text-white text-base font-black flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm shrink-0">
+                <i className="fa-solid fa-calculator"></i>
+              </span>
+              <span>نحوه اندازه‌گیری صحیح و تجربی:</span>
+            </div>
+            <p className="text-slate-100 text-xs sm:text-sm font-bold leading-loose">
+              یک خط‌کش معمولی را روی پشت فرش بگذارید و فاصله ۷ سانتیمتر را مشخص کنید. گره‌های افقی را دقیق بشمارید. عدد شمرده‌شده دقیقاً «رج فرش» شماست (مانند ۵۰ رج اصفهان یا ۶۰ رج اعلای چله‌ابریشم تبریز).
+            </p>
+          </div>
         </div>
       </div>
     </section>

@@ -27,10 +27,17 @@ import { CarpetAuthAndModeration } from './components/CarpetAuthAndModeration';
 import { VirtualBoothTour360 } from './components/VirtualBoothTour360';
 import { TimedAuctionRoom } from './components/TimedAuctionRoom';
 import { MerchantServiceShop } from './components/MerchantServiceShop';
+import { AccessibilitySuite } from './components/AccessibilitySuite';
+import { BazaarElderWizard } from './components/BazaarElderWizard';
+import { CarpetDyeAIAnalyzer } from './components/CarpetDyeAIAnalyzer';
+import { CarpetARVisualizer } from './components/CarpetARVisualizer';
+import { BazaarDialectVoiceAgent } from './components/BazaarDialectVoiceAgent';
+import { CarpetBlockchainPassport } from './components/CarpetBlockchainPassport';
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<AppLang>('fa');
-  const [activeTab, setActiveTab] = useState<string>('counter');
+  const [activeTab, setActiveTab] = useState<string>('raj');
+  const [isWizardOpen, setIsWizardOpen] = useState<boolean>(false);
   const [isLightMode, setIsLightMode] = useState<boolean>(() => {
     return localStorage.getItem('alimiri_theme_mode') === 'light';
   });
@@ -89,6 +96,7 @@ export default function App() {
         selectedProvinceId={selectedProvinceId}
         selectedCity={selectedCityName}
         onSelectRegion={handleSelectRegion}
+        onOpenWizard={() => setIsWizardOpen(true)}
       />
 
       {/* In-App Ad Slider Placement */}
@@ -99,6 +107,12 @@ export default function App() {
 
       {/* Main Tab Contents */}
       <main className="space-y-6">
+        {activeTab === 'dyeai' && <CarpetDyeAIAnalyzer currentLang={currentLang} />}
+        {activeTab === 'arrug' && <CarpetARVisualizer currentLang={currentLang} />}
+        {activeTab === 'voiceagent' && (
+          <BazaarDialectVoiceAgent currentLang={currentLang} onNavigateTab={setActiveTab} />
+        )}
+        {activeTab === 'passport' && <CarpetBlockchainPassport currentLang={currentLang} />}
         {activeTab === 'counter' && <BlessingCounter currentLang={currentLang} />}
         {activeTab === 'authmod' && <CarpetAuthAndModeration currentLang={currentLang} />}
         {activeTab === 'serviceshop' && <MerchantServiceShop currentLang={currentLang} />}
@@ -190,6 +204,31 @@ export default function App() {
           شهر مجازی توانا | اکوسیستم آفرینش | ABCTFBNV Meta
         </div>
       </footer>
+
+      {/* WCAG AAA & ADHD Accessibility Suite */}
+      <AccessibilitySuite currentLang={currentLang} />
+
+      {/* Bazaar Elder Step-by-Step Interactive Wizard */}
+      <BazaarElderWizard
+        currentLang={currentLang}
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onNavigateTab={setActiveTab}
+      />
+
+      {/* Persistent Floating Elder Guide Button */}
+      <button
+        type="button"
+        onClick={() => setIsWizardOpen(true)}
+        className="fixed bottom-24 right-4 z-40 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 px-4 py-3 rounded-full font-black text-sm border-2 border-white shadow-[0_0_25px_rgba(245,158,11,0.9)] flex items-center gap-2 hover:scale-105 active:scale-95 transition cursor-pointer"
+        title="راهنمای قدم‌به‌قدم برای بازاریان و افراد بدون مهارت موبایل"
+      >
+        <span className="w-7 h-7 rounded-full bg-slate-950 text-amber-400 flex items-center justify-center shrink-0">
+          <i className="fa-solid fa-compass text-sm"></i>
+        </span>
+        <span className="hidden sm:inline">راهنمای سنتی بازاریان (صوتی و گام‌به‌گام)</span>
+        <span className="sm:hidden">راهنمای بازار</span>
+      </button>
     </div>
   );
 }
