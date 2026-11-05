@@ -30,17 +30,17 @@ jobs:
           npm run build
           npx cap sync android
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools'
-          accept-license: true
+          accept-android-sdk-licenses: 'true'
 
       - name: Build Android Release (APK & AAB)
         env:
