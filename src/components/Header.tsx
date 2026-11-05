@@ -45,16 +45,15 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   const tabs = [
-    { id: 'raj', labelFa: '🔍 ردشمار و رج‌شمار قالی', labelEn: 'Raj & Knot Counter', icon: 'fa-ruler-combined' },
+    { id: 'booths', labelFa: '🏛️ [بخش الف] غرفه‌های اختصاصی فرش (Social Carpet Booths)', labelEn: 'Instagram Showroom Booths', icon: 'fa-store' },
+    { id: 'serviceshop', labelFa: '🛠️ [بخش ب] خدمات تخصصی صنف فرش (Professional Classifieds)', labelEn: 'Services & Monetization', icon: 'fa-bag-shopping' },
     { id: 'dyeai', labelFa: '🔬 آزمایشگاه رنگرزی گیاهی (AI)', labelEn: 'Dye AI Lab', icon: 'fa-microscope' },
     { id: 'arrug', labelFa: '🏠 پرو واقعیت افزوده فرش (AR)', labelEn: 'AR Rug Visualizer', icon: 'fa-cube' },
     { id: 'voiceagent', labelFa: '🎙️ مشاور صوتی پیشکسوت بازار', labelEn: 'Bazaar Voice Agent', icon: 'fa-headset' },
     { id: 'passport', labelFa: '🔗 شناسنامه بلاکچین و NFT', labelEn: 'Blockchain Passport', icon: 'fa-passport' },
     { id: 'story', labelFa: '📱 استوریساز تلگرام و اینستاگرام', labelEn: 'Story & Post Creator', icon: 'fa-bullhorn' },
-    { id: 'booths', labelFa: '🏪 حجره‌های بازار (کد ملی)', labelEn: 'Merchant Booths', icon: 'fa-store' },
     { id: 'tour360', labelFa: '🌐 تور مجازی ۳۶۰ درجه', labelEn: '360 Virtual Tour', icon: 'fa-vr-cardboard' },
     { id: 'timedauction', labelFa: '⏳ اتاق مزایده زمان‌دار', labelEn: 'Timed Auction Room', icon: 'fa-gavel' },
-    { id: 'serviceshop', labelFa: '🛍️ فروشگاه خدمات و پنل درآمدزایی', labelEn: 'Services & Monetization', icon: 'fa-bag-shopping' },
     { id: 'authmod', labelFa: '🔑 احراز هویت ملی و اصالت‌سنجی', labelEn: 'National ID & Auth', icon: 'fa-fingerprint' },
     { id: 'homelistings', labelFa: '🏠 آگهی خانگی (عموم)', labelEn: 'Sell Home Rug', icon: 'fa-house-chimney' },
     { id: 'customorder', labelFa: 'سفارش بافت ویژه (مشاهیر/پرچم)', labelEn: 'Custom Orders', icon: 'fa-paintbrush' },

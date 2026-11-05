@@ -36,7 +36,7 @@ import { CarpetBlockchainPassport } from './components/CarpetBlockchainPassport'
 
 export default function App() {
   const [currentLang, setCurrentLang] = useState<AppLang>('fa');
-  const [activeTab, setActiveTab] = useState<string>('raj');
+  const [activeTab, setActiveTab] = useState<string>('booths');
   const [isWizardOpen, setIsWizardOpen] = useState<boolean>(false);
   const [isLightMode, setIsLightMode] = useState<boolean>(() => {
     return localStorage.getItem('alimiri_theme_mode') === 'light';

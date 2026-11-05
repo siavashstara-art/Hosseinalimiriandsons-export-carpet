@@ -26,6 +26,9 @@ export interface CarpetListing {
   raj?: number;
   warpMaterial?: string;
   machineSpecs?: MachineRugSpecs;
+  likesCount?: number;
+  viewsCount?: number;
+  isDirectChatAvailable?: boolean;
 }
 
 export interface BoothMerchant {
@@ -43,6 +46,9 @@ export interface BoothMerchant {
   city: string;
   phone: string;
   joinDate: string;
+  bio?: string;
+  followersCount?: number;
+  avatarUrl?: string;
 }
 
 export interface IranianProvince {

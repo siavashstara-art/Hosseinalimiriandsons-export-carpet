@@ -10,7 +10,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+
+function getArg(flag: string): string | undefined {
+  const index = process.argv.indexOf(flag);
+  return index !== -1 && index + 1 < process.argv.length ? process.argv[index + 1] : undefined;
+}
+
+const cliPort = getArg('--port');
+const cliHost = getArg('--host');
+const PORT = Number(cliPort || (process.env.NODE_ENV === 'production' ? process.env.PORT : 3000) || 3000);
+const HOST = cliHost || '0.0.0.0';
 
 app.use(express.json({ limit: '20mb' }));
 
@@ -1425,6 +1434,11 @@ app.post('/api/guilds/register', (req, res) => {
 });
 
 
+// Health check endpoint for Pre-warming & uptime monitoring
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', app: 'FarshBazaar Global', timestamp: new Date().toISOString() });
+});
+
 // Vite integration in Dev mode, or static serving in Prod mode
 if (process.env.NODE_ENV !== 'production') {
   const { createServer: createViteServer } = await import('vite');
@@ -1455,6 +1469,6 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Carpet Assistant server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Carpet Assistant server running on http://${HOST}:${PORT}`);
 });
