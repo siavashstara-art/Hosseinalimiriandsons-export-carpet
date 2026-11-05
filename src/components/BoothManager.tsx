@@ -32,7 +32,7 @@ export function isValidIranianMobile(phone: string): boolean {
 export const INITIAL_BOOTHS: BoothMerchant[] = [
   {
     id: 'booth-1',
-    merchantName: 'حاج حسینعلی میری و پسران',
+    merchantName: 'حاج حسین علی‌میری و پسران',
     boothName: 'حجره مرکزی و ویترین فرش میری',
     nationalId: '0012345678',
     phoneNumber: '09121234567',
@@ -44,7 +44,7 @@ export const INITIAL_BOOTHS: BoothMerchant[] = [
     city: 'تهران (بازار بزرگ)',
     phone: '۰۲۱-۵۵۶۲۱۲۳۴',
     joinDate: '۱۳۵۰ (قدمت ۵۰ ساله)',
-    bio: 'خاندان اصیل تجارت فرش دستباف، صادرکننده قالی‌های ابریشم قم و تبریز با مهر اصالت حاج حسینعلی میری.',
+    bio: 'خاندان اصیل تجارت فرش دستباف، صادرکننده قالی‌های ابریشم قم و تبریز با مهر اصالت حاج حسین علی‌میری.',
     followersCount: 3840
   },
   {

@@ -197,7 +197,7 @@ export const CarpetEvaluator: React.FC<CarpetEvaluatorProps> = ({ currentLang })
               <img src={brandCrestImg} alt="Crest" className="w-10 h-10 rounded-full border border-amber-500/50" />
               <div>
                 <h3 className="font-black text-amber-300 text-sm">شناسنامه دیجیتال و کارشناسی رسمی فرش</h3>
-                <span className="text-[10px] text-slate-400">حجره مرکزی فرش حسینعلی میری و پسران | بازار بزرگ فرش ایران</span>
+                <span className="text-[10px] text-slate-400">حجره مرکزی فرش حاج حسین علی‌میری و پسران | بازار بزرگ فرش ایران</span>
               </div>
             </div>
             <div className="text-end">

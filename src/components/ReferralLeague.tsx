@@ -10,7 +10,7 @@ export const INITIAL_TOP_TEN: ReferralMember[] = [
   {
     rank: 1,
     id: 'ref-1',
-    name: 'حاج حسینعلی میری و پسران',
+    name: 'حاج حسین علی‌میری و پسران',
     boothName: 'حجره مرکزی بازار بزرگ تهران',
     successfulReferrals: 148,
     xpScore: 2850,
